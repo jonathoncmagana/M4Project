@@ -6,7 +6,7 @@
     Created: FIXME
 """
 
-
+from mugwump import Mugwump
 """
  BattleSim Driver for Battle Simulator 3000
  You may need to set the Python interpreter if you have an error along the top. Choose local, and it should find it
@@ -28,12 +28,12 @@ def main():
 
     while keep_playing:
         # print the introduction and rules
-
+        intro()
 
         # initialize game
         # Initialize the Warrior and Mugwump classes, set the current victor to "none"
         warrior = None
-        mugwump = None
+        mugwump = Mugwump()
         victor = "none"
 
         # while neither combatant has lost all of their hit points, report status and battle!
@@ -42,8 +42,8 @@ def main():
             victor = battle(warrior, mugwump)
 
         # declare the winner
-
-
+            if (victor != "none"): # one of them has won
+                pass
         # ask to play again
 
 
@@ -56,7 +56,7 @@ def main():
  """
 def intro():
     # Write a suitable introduction to your game
-    pass
+    print("TODO intro")
 
 
 """
@@ -67,20 +67,23 @@ def intro():
  """
 def battle(warrior, mugwump):
     # determine who attacks first (Roll! For! Initiative!) and store the result
-
+    cur_inititive = initiative() # is this a 1 or 2? or a larger number
     # attack code
     # If the Warrior attacks first
-
-    # Warrior attacks and assigns the resulting damage to the mugwump
-
-    # Check if the Mugwump has been defeated
+    if (cur_inititive == 1):
+        # Warrior attacks and assigns the resulting damage to the mugwump
+        cur_attack = attackChoice()
+        warrior.attatck(cur_attack) # tbd
+        # Check if the Mugwump has been defeated
+        if (mugwump.hitPoints <= 0):
+            return "warrior"
     # If not, Mugwump attacks!
 
     # Otherwise, the Warrior wins!
 
     # Otherwise the Mugwump is first
     # see above
-
+    #mugwump.attack()
     # If neither combatant is defeated, the battle rages on!
     return None
 
@@ -92,7 +95,9 @@ def battle(warrior, mugwump):
  """
 def report(warrior, mugwump):
     # TODO
-    pass
+    print("TODO hitpoints etc for both, look at the sample output")
+    print(f"Mugwump: {mugwump.hitPoints}")
+
 
 
 """
@@ -101,7 +106,12 @@ def report(warrior, mugwump):
  """
 def attackChoice() -> int:
     # TODO
-    return -1
+    # this may need to change, probably needs to move into mugwump and warrior
+    # mugwump already has ai, but when controlled human will need something like this
+
+    choice = int(input("Enter attack choice 1 or 2: "))
+
+    return choice
 
 
 """

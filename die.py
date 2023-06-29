@@ -34,9 +34,10 @@ class Die:
     # def getCurrentValue(self) -> int:
     #     return self.currentValue
 
-    def roll(self):
+    def roll(self) -> int:
         # update self.numberSides
         self.currentValue = random.randint(1, self.__numberSides)
+        return self.currentValue
 
 
 
