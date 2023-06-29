@@ -43,8 +43,8 @@ class Die:
 
 # test code
 
-d6 = Die(100) # run random generator
-print(d6.currentValue)
-d6.roll() # run random generator
-print(d6.currentValue)
-print(d6.currentValue)
+# d6 = Die(100) # run random generator
+# print(d6.currentValue)
+# d6.roll() # run random generator
+# print(d6.currentValue)
+# print(d6.currentValue)

@@ -11,7 +11,7 @@ from die import Die
 
 class Mugwump:
 
-    def __int__(self): # for homework 4 #, aiController:bool):
+    def __init__(self): # for homework 4 #, aiController:bool):
         self.d100 = Die(100)
         self.d20 = Die(20)
         self.d10 = Die(10)
@@ -41,11 +41,19 @@ class Mugwump:
         if (attack_type == 1):
             if (self.d20.roll() >= 13):  # do we hit?
                 damage = self.d6.roll() + self.d6.roll()  # 2d6
+                print(f"Mugwump hits with claws for {damage}")
+            else:
+                print(f"Mugwump misses with claws")
+
         elif (attack_type == 2):
             if (self.d20.roll() >= 16):
                 damage = self.d6.roll() + self.d6.roll() + self.d6.roll()  # 3d6
+                print(f"Mugwump hits with fangs for {damage}")
+            else:
+                print(f"Mugwump misses with fangs")
         else:
             damage = -1 * self.d6.roll()
+            print(f"Mugwump heals for {-1*damage}")
 
         # return the damage
         return damage
@@ -58,6 +66,10 @@ class Mugwump:
     def takeDamage(self, amount: int):
         if (self.hitPoints >= amount):
             self.hitPoints -= amount
+            # if we actually just healed, we should make sure
+            # we don't exceed maxHitpoints
+            if (self.hitPoints>self.maxHitPoints):
+                self.hitPoints = self.maxHitPoints
         else:
             self.hitPoints = 0
 

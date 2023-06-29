@@ -7,6 +7,8 @@
 """
 
 from mugwump import Mugwump
+from warrior import Warrior
+from die import Die
 """
  BattleSim Driver for Battle Simulator 3000
  You may need to set the Python interpreter if you have an error along the top. Choose local, and it should find it
@@ -15,6 +17,7 @@ from mugwump import Mugwump
 """
      # we need to create a Ten-sided die to be used for checking initiative
 """
+d10 = Die(10)
 def main():
     # Local variables
     # Include any variable that will need to be accessed throughout the program here
@@ -32,23 +35,25 @@ def main():
 
         # initialize game
         # Initialize the Warrior and Mugwump classes, set the current victor to "none"
-        warrior = None
+        warrior = Warrior()
         mugwump = Mugwump()
         victor = "none"
 
         # while neither combatant has lost all of their hit points, report status and battle!
         while victor == "none":
-            report(warrior, mugwump);
+            report(warrior, mugwump)
             victor = battle(warrior, mugwump)
 
         # declare the winner
             if (victor != "none"): # one of them has won
-                pass
-        # ask to play again
+                report(warrior, mugwump)
+                victory(victor)
+                # ask to play again
+                keep_playing = playAgain()
 
 
     # Thank the user for playing your game
-
+    print("Thank you for playing Battle Simulator 3000!")
 
 
 """
@@ -56,7 +61,13 @@ def main():
  """
 def intro():
     # Write a suitable introduction to your game
-    print("TODO intro")
+    print(  "Welcome to Battle Simulator 3000! The world's more low tech battle simulator!"
+            "You are a Valiant Warrior defending your humble village from an evil Mugwump! Fight bravely, "
+            "or the citizens of your town will be the Mugwump's dinner!"
+            "\nYou have your Trusty Sword, which deals decent damage, but can be tough to hit with sometimes. "
+            "You also have your Shield of Light, which is not as strong as your sword, but is easier to deal "
+            "damage with."
+            "\nLet the epic battle begin!")
 
 
 """
@@ -72,20 +83,48 @@ def battle(warrior, mugwump):
     # If the Warrior attacks first
     if (cur_inititive == 1):
         # Warrior attacks and assigns the resulting damage to the mugwump
+        print("The warrior attacks first!")
         cur_attack = attackChoice()
-        warrior.attatck(cur_attack) # tbd
+        damage = warrior.attack((cur_attack)) #calculate damage caused by warrior
+
+        mugwump.takeDamage(damage) # apply damage to mugwump
         # Check if the Mugwump has been defeated
         if (mugwump.hitPoints <= 0):
             return "warrior"
-    # If not, Mugwump attacks!
+        # If not, Mugwump attacks!
+        damage = mugwump.attack()
+        # the mugwump may have healed itself, so have to check
+        if(damage > 0):
+            warrior.takeDamage(damage)
+        else:  #mugwump healed
+            mugwump.takeDamage(damage) #healing because it is negative
 
-    # Otherwise, the Warrior wins!
+        if (warrior.hitPoints == 0):
+            return "mugwump"  #mugwump wins!
+    else: # mugwump attacks first!
+        print("The mugwump attacks first!")
+        # mugwump attacks and assigns the resulting damage to the warrior
+        damage = mugwump.attack()
+        # the mugwump may have healed itself, so have to check
+        if (damage > 0):
+            warrior.takeDamage(damage)
+        else:  # mugwump healed
+            mugwump.takeDamage(damage)  # healing because it is negative
 
-    # Otherwise the Mugwump is first
-    # see above
-    #mugwump.attack()
+        if (warrior.hitPoints == 0):
+            return "mugwump"  # mugwump wins!
+
+        cur_attack = attackChoice()
+        damage = warrior.attack(cur_attack)  # calculate damage caused by warrior
+
+        mugwump.takeDamage(damage)  # apply damage to mugwump
+        # Check if the Mugwump has been defeated
+        if (mugwump.hitPoints <= 0):
+            return "warrior"
+
+
     # If neither combatant is defeated, the battle rages on!
-    return None
+    return "none"
 
 
 """
@@ -94,9 +133,9 @@ def battle(warrior, mugwump):
    @param mugwump The Evil Mugwump!
  """
 def report(warrior, mugwump):
-    # TODO
-    print("TODO hitpoints etc for both, look at the sample output")
-    print(f"Mugwump: {mugwump.hitPoints}")
+    print(f"Warrior HP: {warrior.hitPoints}")
+    print(f"Mugwump HP: {mugwump.hitPoints}")
+
 
 
 
@@ -105,12 +144,13 @@ def report(warrior, mugwump):
    @return 1 for sword, 2 for shield
  """
 def attackChoice() -> int:
-    # TODO
     # this may need to change, probably needs to move into mugwump and warrior
     # mugwump already has ai, but when controlled human will need something like this
 
-    choice = int(input("Enter attack choice 1 or 2: "))
-
+    choice = int(input( "How would you like to attack?\n"
+                        "1. Your Trusty Sword\n"
+                        "2. Your Shield of Light\n"
+                        "Enter choice: "))
     return choice
 
 
@@ -119,10 +159,20 @@ def attackChoice() -> int:
    re-roll.
    @return 1 if the warrior goes first, 2 if the mugwump goes first
  """
-def initiative() -> int:
+def initiative() -> int: # return 1 for warrior, 2 for mugwump
     # roll for initiative for both combatants
     # until one initiative is greater than the other
-    return -1
+    warrior_initiative = d10.roll()
+    mugwump_inititive = d10.roll()
+    while (warrior_initiative == mugwump_inititive):
+        warrior_initiative = d10.roll()
+        mugwump_inititive = d10.roll()
+
+    if (warrior_initiative > mugwump_inititive):
+        return 1  # warrior goes first
+    else:
+        return 2  # mugwump goes first
+
 
 
 """
@@ -130,8 +180,12 @@ def initiative() -> int:
    @param victor the name of the victor of the epic battle
  """
 def victory(victor):
-    # TODO
-    pass
+    if (victor == "warrior"):
+        print(  "The citizens cheer and invite you back to town for a feast"
+                " as thanks for saving their lives (again)!")
+    else:
+        print("You loose to the Mugwump! He mocks you for how pathetically you fought")
+
 
 
 """
@@ -140,7 +194,9 @@ def victory(victor):
    @return true if yes, false otherwise
  """
 def playAgain() -> bool:
-    # TODO
+    choice = input("Would you like to play again (yes/no)?")
+    if (str.lower(choice) == "y" or str.lower(choice)  == "yes"):
+        return True
     return False
 
 if __name__ == "__main__":
