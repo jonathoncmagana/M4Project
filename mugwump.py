@@ -11,7 +11,7 @@ from die import Die
 
 class Mugwump:
 
-    def __init__(self): # for homework 4 #, aiController:bool):
+    def __init__(self): # for homework 4 #, aiController:bool): # testable as well, range of hitpoints, and hitpoints == max hitpoints
         self.d100 = Die(100)
         self.d20 = Die(20)
         self.d10 = Die(10)
@@ -31,7 +31,7 @@ class Mugwump:
                a negative amount of damage if the Mugwump heals itself
      """
 
-    def attack(self) -> int:
+    def attack(self) -> int:  # is this testable? yes, you could do some range tests with damage
         # get attack type from __ai()
         attack_type = self.__ai()
 
@@ -56,14 +56,14 @@ class Mugwump:
             print(f"Mugwump heals for {-1*damage}")
 
         # return the damage
-        return damage
+        return damage # range looks like -6 ... 0 .. 18. maybe test this 100 times
 
     """
        This method determines what action the Mugwump performs
        @return 1 for a Claw attack, 2 for a Bite, and 3 if the Mugwump licks its wounds
      """
 
-    def takeDamage(self, amount: int):
+    def takeDamage(self, amount: int): # testable, instructor provided example
         if (self.hitPoints >= amount):
             self.hitPoints -= amount
             # if we actually just healed, we should make sure
@@ -73,7 +73,7 @@ class Mugwump:
         else:
             self.hitPoints = 0
 
-    def __ai(self) -> int:  # __ means private
+    def __ai(self) -> int:  # __ means private # testable on range of output
         attack_type = 0
         roll = self.d20.roll()
         # 13 or greater on a d20
